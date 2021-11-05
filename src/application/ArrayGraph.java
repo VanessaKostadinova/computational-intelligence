@@ -1,9 +1,10 @@
+package application;
+
 import java.util.*;
 import java.util.regex.Pattern;
 
 public class ArrayGraph {
-    private Double[][] collection;
-    Pattern commaRegex = Pattern.compile(",");
+    private final Double[][] collection;
 
     public ArrayGraph(Double[][] collection) {
         this.collection = collection;
@@ -12,7 +13,7 @@ public class ArrayGraph {
     public ArrayGraph(Scanner in) {
         in.reset();
         List<Float[]> entries = new LinkedList<>();
-
+        Pattern commaRegex = Pattern.compile(",");
         while (in.hasNext()) {
             String str = in.nextLine();
             String[] values = commaRegex.split(str);
@@ -53,56 +54,13 @@ public class ArrayGraph {
         return pathLength;
     }
 
-    public Double findLength(int start, int end) {
+
+
+    private Double findLength(int start, int end) {
         return collection[start][end];
     }
 
-    public List<int[]> getAllValidRoutes() {
-        int[] temp = quickAndDirtyCombinationGeneration();
-        List<int[]> combinations = new ArrayList<>();
-
-        generate(temp.length, temp, combinations);
-
-        return combinations;
-    }
-
-    private int[] quickAndDirtyCombinationGeneration() {
-        int[] temp = new int[collection.length];
-
-        for (int i = 0; i < collection.length; i++) {
-            temp[i] = i;
-        }
-
-        return temp;
-    }
-
-    /**
-     * This method swaps the elements at the two indexes given in an array;
-     */
-    private void swap(int[] array, final int indexA, final int indexB) {
-        int a = array[indexA];
-        array[indexA] = array[indexB];
-        array[indexB] = a;
-    }
-
-    private void generate(int len, int[] array, List<int[]> out) {
-        if (len == 1) {
-            int [] finalArray = Arrays.copyOf(array, array.length + 1);
-            finalArray[array.length] = array[0];
-            out.add(finalArray);
-            return;
-        }
-
-        generate(len - 1, array, out);
-
-        for (int i = 0; i < len - 1; i++) {
-            if (len % 2 == 0) {
-                swap(array, i, len - 1);
-            } else {
-                swap(array, 0, len - 1);
-            }
-
-            generate(len - 1, array, out);
-        }
+    public int getPathLength() {
+        return collection.length;
     }
 }
