@@ -1,22 +1,18 @@
-package application;
+package collections;
 
 import java.util.*;
 
-public class PathService {
+public class ArrayGraphMaths {
 
-    Random random;
+    private static final Random random = new Random();
 
-    public PathService() {
-        random = new Random();
-    }
-
-    public int[] generateRandomClosedRoute(int numberOfDigits) {
+    public static int[] generateRandomClosedRoute(int numberOfDigits) {
         return closePath(generateRandomOpenRoute(numberOfDigits));
     }
 
-    public int[] generateRandomOpenRoute(int numberOfDigits) {
+    public static int[] generateRandomOpenRoute(int numberOfDigits) {
         int[] combination = new int[numberOfDigits];
-        int[] temp = quickAndDirtyCombinationGeneration(numberOfDigits);
+        int[] temp = generateSequentialArray(numberOfDigits);
         System.arraycopy(temp, 0, combination, 0, temp.length);
 
         for (int i = 0; i < numberOfDigits; i++) {
@@ -26,8 +22,8 @@ public class PathService {
         return combination;
     }
 
-    public List<int[]> getAllValidRoutes(int pathLength) {
-        int[] temp = quickAndDirtyCombinationGeneration(pathLength);
+    public static List<int[]> getAllValidRoutes(int pathLength) {
+        int[] temp = generateSequentialArray(pathLength);
         List<int[]> combinations = new ArrayList<>();
 
         generate(temp.length, temp, combinations);
@@ -35,7 +31,7 @@ public class PathService {
         return combinations;
     }
 
-    private int[] quickAndDirtyCombinationGeneration(int numberOfDigits) {
+    private static int[] generateSequentialArray(int numberOfDigits) {
         int[] temp = new int[numberOfDigits];
 
         for (int i = 0; i < numberOfDigits; i++) {
@@ -48,13 +44,13 @@ public class PathService {
     /**
      * This method swaps the elements at the two indexes given in an array.
      */
-    private void swap(int[] array, final int indexA, final int indexB) {
+    public static void swap(int[] array, final int indexA, final int indexB) {
         int a = array[indexA];
         array[indexA] = array[indexB];
         array[indexB] = a;
     }
 
-    private void generate(int len, int[] array, List<int[]> out) {
+    private static void generate(int len, int[] array, List<int[]> out) {
         if (len == 1) {
             out.add(closePath(array));
             return;
@@ -73,13 +69,13 @@ public class PathService {
         }
     }
 
-    public int[] closePath(int[] array) {
+    public static int[] closePath(int[] array) {
         int[] finalArray = Arrays.copyOf(array, array.length + 1);
         finalArray[array.length] = array[0];
         return finalArray;
     }
 
-    public List<int[]> twoOptNeighbourhoodGeneration(int[] path) {
+    public static List<int[]> twoOptNeighbourhoodGeneration(int[] path) {
         List<int[]> list = new LinkedList<>();
         path = openPath(path);
         for (int i = 0; i < path.length; i++) {
@@ -96,7 +92,7 @@ public class PathService {
         return list;
     }
 
-    public int[] openPath(int[] path){
+    public static int[] openPath(int[] path){
         return Arrays.copyOf(path, path.length - 1);
     }
 }

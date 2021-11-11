@@ -1,80 +1,94 @@
 package application;
 
+import antenna.AntennaArray;
+import collections.ArrayGraph;
+import evolution.Population;
 import exceptions.RuntimeFileNotFoundException;
+import swarm.SwarmNetwork;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+
+import static collections.ArrayGraphMaths.*;
 
 public class Main {
     private static final ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    private static final PathService ps = new PathService();
-    private static final Double[][] test = new Double[][]{
-            {5D, 1D, 2D},
-            {2D, 4D, 1D},
-            {1D, 4D, 2D}
-    };
-    private static final int[] test2 = new int[]{1, 2, 3, 4};
 
     public static void main(String[] args) {
+        //lab03();
         try (Scanner sc = new Scanner(loadFile("ulysses16(1).csv"))) {
             ArrayGraph ag = new ArrayGraph(sc);
+
+            int[] evolutionary = evolutionaryAlgorithm(ag);
+
+            System.out.println(Arrays.toString(evolutionary));
+            System.out.println(ag.walkOpenPath(evolutionary));
+
             int[] localSearch = localSearchWithTimeLimit(ag, 10);
             int[] randomSearch = compareRandomWithTimeLimit(ag, 10);
             System.out.println(Arrays.toString(localSearch));
-            System.out.println(ag.walk(localSearch));
+            System.out.println(ag.walkClosedPath(localSearch));
             System.out.println(Arrays.toString(randomSearch));
-            System.out.println(ag.walk(randomSearch));
-            //ps.twoOptNeighbourhoodGeneration(test2).forEach(e -> System.out.println(Arrays.toString(e)));
+            System.out.println(ag.walkClosedPath(randomSearch));
         } catch (FileNotFoundException e) {
             throw new RuntimeFileNotFoundException(e);
         }
     }
 
-    private static int[] localSearchWithTimeLimit(ArrayGraph graph, int secondsToRun) {
+    private static int[] evolutionaryAlgorithm(ArrayGraph arrayGraph){
+        Population population = new Population(arrayGraph, 50);
+        LocalDateTime endTime = LocalDateTime.now().plusSeconds(30);
+
+        while (endTime.isAfter(LocalDateTime.now())) {
+            population.update();
+        }
+
+        return population.getBestMember().getPath();
+    }
+
+    private static int[] localSearchWithTimeLimit(ArrayGraph arrayGraph, int secondsToRun) {
         int[] bestPath = null;
         Double bestCost = null;
 
         LocalDateTime timeToStop = LocalDateTime.now().plusSeconds(secondsToRun);
 
-        int[] localOriginPath = ps.generateRandomClosedRoute(graph.getPathLength());
-        Double localOriginCost = graph.walk(localOriginPath);
+        int[] localOriginPath = generateRandomClosedRoute(arrayGraph.getPathLength());
+        Double localOriginCost = arrayGraph.walkClosedPath(localOriginPath);
 
         while (LocalDateTime.now().isBefore(timeToStop)) {
-            List<int[]> localNeighbours = ps.twoOptNeighbourhoodGeneration(localOriginPath);
+            List<int[]> localNeighbours = twoOptNeighbourhoodGeneration(localOriginPath);
 
-            int[] localBest = bestPath(localNeighbours, graph);
+            int[] localBest = bestPath(localNeighbours, arrayGraph);
 
-            if(bestCost == null || graph.walk(localBest) < bestCost){
+            if (bestCost == null || arrayGraph.walkClosedPath(localBest) < bestCost) {
                 bestPath = localBest;
-                bestCost = graph.walk(localBest);
+                bestCost = arrayGraph.walkClosedPath(localBest);
             }
 
-            if(graph.walk(localBest) < localOriginCost){
+            if (arrayGraph.walkClosedPath(localBest) < localOriginCost) {
                 localOriginPath = localBest;
-                localOriginCost = graph.walk(localBest);
+                localOriginCost = arrayGraph.walkClosedPath(localBest);
             } else {
-                localOriginPath = ps.generateRandomClosedRoute(graph.getPathLength());
-                localOriginCost = graph.walk(localOriginPath);
+                localOriginPath = generateRandomClosedRoute(arrayGraph.getPathLength());
+                localOriginCost = arrayGraph.walkClosedPath(localOriginPath);
             }
         }
         return bestPath;
     }
 
     private int[] compareAll(ArrayGraph graph) {
-        return bestPath(ps.getAllValidRoutes(graph.getPathLength()), graph);
+        return bestPath(getAllValidRoutes(graph.getPathLength()), graph);
     }
 
-    private static int[] bestPath(List<int[]> paths, ArrayGraph graph){
+    private static int[] bestPath(List<int[]> paths, ArrayGraph graph) {
         Double lowestTotal = null;
         int[] chosenCombination = null;
 
         for (int[] i : paths) {
-            Double cost = graph.walk(i);
+            Double cost = graph.walkClosedPath(i);
             if (lowestTotal == null || cost < lowestTotal) {
                 lowestTotal = cost;
                 chosenCombination = i;
@@ -90,8 +104,8 @@ public class Main {
         int[] chosenCombination = null;
 
         for (int i = 0; i < routeLimit; i++) {
-            int[] combination = ps.generateRandomClosedRoute(graph.getPathLength());
-            Double cost = graph.walk(combination);
+            int[] combination = generateRandomClosedRoute(graph.getPathLength());
+            Double cost = graph.walkClosedPath(combination);
             if (lowestTotal == null || cost < lowestTotal) {
                 lowestTotal = cost;
                 chosenCombination = combination;
@@ -108,8 +122,8 @@ public class Main {
         LocalDateTime timeToStop = LocalDateTime.now().plusSeconds(secondsToRun);
 
         while (LocalDateTime.now().isBefore(timeToStop)) {
-            int[] combination = ps.generateRandomClosedRoute(graph.getPathLength());
-            Double cost = graph.walk(combination);
+            int[] combination = generateRandomClosedRoute(graph.getPathLength());
+            Double cost = graph.walkClosedPath(combination);
             if (lowestTotal == null || cost < lowestTotal) {
                 lowestTotal = cost;
                 chosenCombination = combination;
@@ -125,5 +139,26 @@ public class Main {
         } else {
             throw new RuntimeFileNotFoundException(name);
         }
+    }
+
+    private static void lab03() {
+        AntennaArray antennaArray = new AntennaArray(10, 90D);
+        SwarmNetwork swarmNetwork = new SwarmNetwork(antennaArray);
+        LocalDateTime l = LocalDateTime.now().plusSeconds(30);
+        while (l.isAfter(LocalDateTime.now())) {
+            swarmNetwork.update();
+        }
+        System.out.println(Arrays.toString(swarmNetwork.getGlobalBestPosition()));
+        System.out.println(antennaArray.evaluate(swarmNetwork.getGlobalBestPosition()));
+        /*System.out.println(antennaArray.evaluate(new double[]{0.3D, 0.8D, 1.5D}));
+        double[][] bounds = antennaArray.bounds();
+        List<Double> randoms = new LinkedList<>();
+        double[] antennaPlacements = new double[bounds.length];
+        for (int i = 0; i < bounds.length; i++) {
+            antennaPlacements[i] = random.nextDouble(bounds[i][0], bounds[i][1]);
+        }
+        Arrays.sort(antennaPlacements);
+        System.out.println(Arrays.toString(antennaPlacements));
+        Arrays.stream(antennaArray.bounds()).forEach(e -> System.out.println(Arrays.toString(e)));*/
     }
 }

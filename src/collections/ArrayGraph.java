@@ -1,4 +1,4 @@
-package application;
+package collections;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -42,8 +42,8 @@ public class ArrayGraph {
         }
     }
 
-    public Double walk(int[] path) {
-        Double pathLength = 0D;
+    public double walkClosedPath(int[] path) {
+        double pathLength = 0D;
         int previous = path[0];
 
         for (int i = 1; i < path.length; i++) {
@@ -54,7 +54,12 @@ public class ArrayGraph {
         return pathLength;
     }
 
+    public double walkOpenPath(int[] path) {
+        double pathLength = walkClosedPath(path);
+        pathLength += findLength(path[path.length - 1], path[0]);
 
+        return pathLength;
+    }
 
     private Double findLength(int start, int end) {
         return collection[start][end];
