@@ -7,14 +7,6 @@ import static collections.ArrayGraphMaths.swap;
 public class EvolutionMaths {
     private static final Random random = new Random();
 
-    public static void encode() {
-
-    }
-
-    public static void decode() {
-
-    }
-
     public static void mutate(int[] path) {
         int startIndex = random.nextInt(0, path.length - 1);
         int endIndex = random.nextInt(0, path.length - 1);
@@ -49,9 +41,9 @@ public class EvolutionMaths {
         int endIndex = (startIndex + length - 1) % (crossover.length);
 
         //copy path2 into crossover
-        for(int i = 0; i < path2.length; i++){
+        for (int i = 0; i < path2.length; i++) {
             int index = (i + startIndex + length) % (path2.length);
-            if(path2[index] != -1){
+            if (path2[index] != -1) {
                 endIndex = (endIndex + 1) % (crossover.length);
                 crossover[endIndex] = path2[index];
             }

@@ -6,7 +6,7 @@ import java.util.Random;
 public class AntennaMaths {
     private static final Random random = new Random();
 
-    public static double[] generatePosition(double[][] bounds){
+    public static double[] generatePosition(double[][] bounds) {
         double minimumSpacing = AntennaArray.MIN_SPACING;
         double minimumLeftoverSpace = minimumSpacing * bounds.length;
         double maximumStartingSpace = 0;

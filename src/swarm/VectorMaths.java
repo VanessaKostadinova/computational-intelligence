@@ -4,20 +4,6 @@ import java.util.List;
 
 public class VectorMaths {
 
-    public static Vector multiplyVectors(Vector v1, Vector v2) {
-        if (v1.getNumberOfAxis() != v2.getNumberOfAxis())
-            throw new IllegalArgumentException("Number of axis don't match");
-        double[] result = new double[v1.getNumberOfAxis()];
-        double[] v1Points = v1.getVectorPoints();
-        double[] v2Points = v2.getVectorPoints();
-
-        for (int i = 0; i < v1.getNumberOfAxis(); i++) {
-            result[i] = v1Points[i] * v2Points[i];
-        }
-
-        return new Vector(result);
-    }
-
     public static Vector multiplyScalar(Vector v, double s) {
         double[] result = new double[v.getNumberOfAxis()];
         double[] vectorPoints = v.getVectorPoints();
@@ -30,12 +16,14 @@ public class VectorMaths {
     }
 
     public static double[] addVectorToCoordinate(Vector v, double[] c) {
-        double[] result = new double[v.getNumberOfAxis()];
+        double[] result = new double[c.length];
         double[] vectorPoints = v.getVectorPoints();
 
         for (int i = 0; i < v.getNumberOfAxis(); i++) {
             result[i] = c[i] + vectorPoints[i];
         }
+
+        result[result.length - 1] = c[c.length - 1];
 
         return result;
     }

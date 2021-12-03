@@ -28,12 +28,13 @@ public class SwarmNetwork {
         for (int i = 0; i < particles.length; i++) {
             double[] generatedPosition;
 
-            do  {
+            do {
                 generatedPosition = generatePosition(antennaArray.bounds());
             } while (!antennaArray.is_valid(generatedPosition));
 
             double generatedPositionValue = Math.abs(antennaArray.evaluate(generatedPosition));
 
+            //update best
             if (globalBestValue == null || generatedPositionValue < globalBestValue) {
                 globalBestPosition = generatedPosition;
                 globalBestValue = generatedPositionValue;
@@ -62,6 +63,7 @@ public class SwarmNetwork {
             if (antennaArray.is_valid(newPos)) {
                 s.update(v, newPos);
 
+                //update best
                 double newValue = Math.abs(antennaArray.evaluate(newPos));
 
                 if (newValue < antennaArray.evaluate(s.getBestPosition()))
@@ -69,6 +71,10 @@ public class SwarmNetwork {
                 if (newValue < globalBestValue) {
                     globalBestPosition = newPos;
                     globalBestValue = newValue;
+
+                    System.out.println(globalBestValue);
+                    System.out.println(Arrays.toString(globalBestPosition));
+                    System.out.println("-----");
                 }
             }
         }
@@ -78,7 +84,7 @@ public class SwarmNetwork {
         return globalBestPosition;
     }
 
-    private double[] clipAperture(double[] coordinates){
+    private double[] clipAperture(double[] coordinates) {
         return Arrays.copyOf(coordinates, coordinates.length - 1);
     }
 }

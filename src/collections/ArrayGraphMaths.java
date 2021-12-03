@@ -26,7 +26,7 @@ public class ArrayGraphMaths {
         int[] temp = generateSequentialArray(pathLength);
         List<int[]> combinations = new ArrayList<>();
 
-        generate(temp.length, temp, combinations);
+        heapsAlgorithm(temp.length, temp, combinations);
 
         return combinations;
     }
@@ -41,31 +41,29 @@ public class ArrayGraphMaths {
         return temp;
     }
 
-    /**
-     * This method swaps the elements at the two indexes given in an array.
-     */
     public static void swap(int[] array, final int indexA, final int indexB) {
         int a = array[indexA];
         array[indexA] = array[indexB];
         array[indexB] = a;
     }
 
-    private static void generate(int len, int[] array, List<int[]> out) {
-        if (len == 1) {
+    private static void heapsAlgorithm(int depth, int[] array, List<int[]> out) {
+        //if at last item then all permutations calculated
+        if (depth == 1) {
             out.add(closePath(array));
             return;
         }
 
-        generate(len - 1, array, out);
+        heapsAlgorithm(depth - 1, array, out);
 
-        for (int i = 0; i < len - 1; i++) {
-            if (len % 2 == 0) {
-                swap(array, i, len - 1);
+        for (int i = 0; i < depth - 1; i++) {
+            if (depth % 2 == 0) {
+                swap(array, i, depth - 1);
             } else {
-                swap(array, 0, len - 1);
+                swap(array, 0, depth - 1);
             }
 
-            generate(len - 1, array, out);
+            heapsAlgorithm(depth - 1, array, out);
         }
     }
 
@@ -78,6 +76,7 @@ public class ArrayGraphMaths {
     public static List<int[]> twoOptNeighbourhoodGeneration(int[] path) {
         List<int[]> list = new LinkedList<>();
         path = openPath(path);
+
         for (int i = 0; i < path.length; i++) {
             int r = i + 1;
             int mod = r % path.length;
@@ -92,7 +91,7 @@ public class ArrayGraphMaths {
         return list;
     }
 
-    public static int[] openPath(int[] path){
+    public static int[] openPath(int[] path) {
         return Arrays.copyOf(path, path.length - 1);
     }
 }

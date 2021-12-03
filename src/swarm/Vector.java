@@ -8,12 +8,12 @@ public class Vector {
     }
 
     public Vector(double[] point1, double[] point2) {
-        if(point1.length != point2.length)
+        if (point1.length != point2.length)
             throw new IllegalArgumentException("Number of axis don't match");
 
         vectorPoints = new double[point1.length];
 
-        for(int i = 0; i < point1.length; i++){
+        for (int i = 0; i < point1.length; i++) {
             vectorPoints[i] = point2[i] - point1[i];
         }
     }
@@ -25,11 +25,11 @@ public class Vector {
         this.vectorPoints = vectorPoints;
     }
 
-    public int getNumberOfAxis(){
+    public int getNumberOfAxis() {
         return vectorPoints.length;
     }
 
-    public double[] getVectorPoints(){
+    public double[] getVectorPoints() {
         return vectorPoints;
     }
 }
